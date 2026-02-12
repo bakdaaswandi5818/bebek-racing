@@ -580,8 +580,8 @@
                         position: 0,
                         speed: Math.random() * 2 + 1, // Random speed between 1 (inclusive) and 3 (exclusive)
                         container: duckContainer,
-                        lastSpeed: 0,
-                        id: index
+                        id: index,
+                        boostTimeout: null
                     });
                     
                     this.lastSplashTime[index] = 0;
@@ -623,9 +623,15 @@
                                 // Create water splash effect
                                 this.createWaterSplash(duck);
                                 
+                                // Clear previous timeout to prevent race conditions
+                                if (duck.boostTimeout) {
+                                    clearTimeout(duck.boostTimeout);
+                                }
+                                
                                 // Reset speed after a moment
-                                setTimeout(() => {
+                                duck.boostTimeout = setTimeout(() => {
                                     duck.speed = Math.max(duck.speed - speedBoost, 1);
+                                    duck.boostTimeout = null;
                                 }, 500);
                             }
                             
