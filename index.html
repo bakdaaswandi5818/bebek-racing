@@ -276,6 +276,20 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+        
+        #race-timer {
+            transition: all 0.3s ease;
+        }
+        
+        #race-timer.warning {
+            color: #ef4444;
+            animation: timer-pulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes timer-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -327,12 +341,17 @@
         <div id="race-track" class="hidden bg-white rounded-lg shadow-2xl p-6 md:p-8">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-gray-800">🏁 Race Track</h2>
-                <button 
-                    id="reset-btn" 
-                    class="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                    Reset Race
-                </button>
+                <div class="flex items-center gap-4">
+                    <div id="race-timer" class="text-2xl font-bold text-purple-600">
+                        <span id="timer-display">00:00</span>
+                    </div>
+                    <button 
+                        id="reset-btn" 
+                        class="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                        Reset Race
+                    </button>
+                </div>
             </div>
             <div id="ducks-container" class="space-y-2"></div>
         </div>
@@ -508,6 +527,8 @@
                 this.winnerModal = document.getElementById('winner-modal');
                 this.winnerName = document.getElementById('winner-name');
                 this.closeModalBtn = document.getElementById('close-modal-btn');
+                this.timerDisplay = document.getElementById('timer-display');
+                this.raceTimer = document.getElementById('race-timer');
                 
                 this.bindEvents();
                 this.updateParticipantCount();
@@ -566,6 +587,11 @@
                 // Get race duration
                 this.raceDuration = parseInt(this.raceDurationSelect.value) * 1000; // Convert to milliseconds
                 this.raceStartTime = null;
+                
+                // Initialize timer display
+                const initialSeconds = parseInt(this.raceDurationSelect.value);
+                this.timerDisplay.textContent = `${initialSeconds.toString().padStart(2, '0')}:00`;
+                this.raceTimer.classList.remove('warning');
                 
                 // Show race track
                 this.raceTrack.classList.remove('hidden');
@@ -641,8 +667,21 @@
                         this.raceStartTime = currentTime;
                     }
                     
-                    // Check if race duration has been exceeded
+                    // Update timer display
                     const elapsedTime = currentTime - this.raceStartTime;
+                    const remainingTime = Math.max(0, this.raceDuration - elapsedTime);
+                    const seconds = Math.floor(remainingTime / 1000);
+                    const milliseconds = Math.floor((remainingTime % 1000) / 10);
+                    this.timerDisplay.textContent = `${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`;
+                    
+                    // Add warning class when time is running out (last 5 seconds)
+                    if (remainingTime <= 5000) {
+                        this.raceTimer.classList.add('warning');
+                    } else {
+                        this.raceTimer.classList.remove('warning');
+                    }
+                    
+                    // Check if race duration has been exceeded
                     if (elapsedTime >= this.raceDuration) {
                         // Find the duck that's furthest ahead
                         let leadDuck = this.ducks[0];
