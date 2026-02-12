@@ -151,6 +151,13 @@
             position: relative;
             height: 60px;
             margin-bottom: 10px;
+            background: transparent;
+            border-radius: 8px;
+            overflow: visible;
+        }
+        
+        #ducks-container {
+            position: relative;
             background: 
                 linear-gradient(to bottom, 
                     rgba(135, 206, 235, 0.3) 0%, 
@@ -161,9 +168,31 @@
                     #90EE90 70%, 
                     #7DC67D 85%,
                     #6AB86A 100%);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        #ducks-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 60% 30%, rgba(255,255,255,0.3) 0%, transparent 35%),
+                radial-gradient(ellipse at 80% 60%, rgba(255,255,255,0.35) 0%, transparent 40%),
+                linear-gradient(to right, 
+                    rgba(255,255,255,0.2) 0%, 
+                    rgba(255,255,255,0.05) 25%,
+                    rgba(255,255,255,0.15) 50%, 
+                    rgba(255,255,255,0.05) 75%,
+                    rgba(255,255,255,0.2) 100%);
+            animation: wave 3s ease-in-out infinite, ripple 2s ease-in-out infinite;
+            pointer-events: none;
+            border-radius: 12px 12px 0 0;
         }
         
         .duck {
@@ -611,10 +640,6 @@
                 this.participants.forEach((name, index) => {
                     const duckContainer = document.createElement('div');
                     duckContainer.className = 'duck-container';
-                    
-                    const waterEffect = document.createElement('div');
-                    waterEffect.className = 'water-effect';
-                    duckContainer.appendChild(waterEffect);
                     
                     const duck = document.createElement('div');
                     duck.className = 'duck';
