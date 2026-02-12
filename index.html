@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦆 Duck Race - Random Picker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        .max-w-6xl {
+            max-width: 72rem;
+        }
+        
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .p-12 { padding: 3rem; }
+        
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .my-4 { margin-top: 1rem; margin-bottom: 1rem; }
+        
+        .text-center { text-align: center; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .text-5xl { font-size: 3rem; line-height: 1; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        
+        .text-white { color: #ffffff; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-purple-600 { color: #9333ea; }
+        .text-red-500 { color: #ef4444; }
+        
+        .bg-white { background-color: #ffffff; }
+        .bg-gray-500 { background-color: #6b7280; }
+        .bg-gray-600 { background-color: #4b5563; }
+        
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-full { border-radius: 9999px; }
+        
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        
+        .w-full { width: 100%; }
+        .max-w-md { max-width: 28rem; }
+        
+        .block { display: block; }
+        .flex { display: flex; }
+        .hidden { display: none; }
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-8 { gap: 2rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        
+        .z-50 { z-index: 50; }
+        
+        .opacity-90 { opacity: 0.9; }
+        
+        .border-2 { border-width: 2px; }
+        .border-gray-300 { border-color: #d1d5db; }
+        
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        
+        textarea {
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        button {
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+        
+        .bg-gradient-purple {
+            background: linear-gradient(to right, #9333ea, #db2777);
+        }
+        
+        .bg-gradient-purple:hover {
+            background: linear-gradient(to right, #7e22ce, #be185d);
+        }
+        
+        .bg-gray-500:hover {
+            background-color: #4b5563;
+        }
+        
+        button:focus {
+            outline: none;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #9333ea;
+        }
+        
+        button {
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        .bg-black-50 {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        @media (min-width: 768px) {
+            .md\:p-8 { padding: 2rem; }
+            .md\:p-12 { padding: 3rem; }
+            .md\:text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+            .md\:text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+            .md\:text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+            .md\:text-6xl { font-size: 3.75rem; line-height: 1; }
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .duck-container {
+            position: relative;
+            height: 60px;
+            margin-bottom: 10px;
+            background: transparent;
+            border-radius: 8px;
+            overflow: visible;
+        }
+        
+        #ducks-container {
+            position: relative;
+            background: 
+                linear-gradient(to bottom, 
+                    rgba(135, 206, 235, 0.3) 0%, 
+                    rgba(135, 206, 235, 0.5) 40%,
+                    #4A9FD8 50%, 
+                    #3A8FC7 65%,
+                    #2D7FB5 70%, 
+                    #90EE90 70%, 
+                    #7DC67D 85%,
+                    #6AB86A 100%);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        #ducks-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 60% 30%, rgba(255,255,255,0.3) 0%, transparent 35%),
+                radial-gradient(ellipse at 80% 60%, rgba(255,255,255,0.35) 0%, transparent 40%),
+                linear-gradient(to right, 
+                    rgba(255,255,255,0.2) 0%, 
+                    rgba(255,255,255,0.05) 25%,
+                    rgba(255,255,255,0.15) 50%, 
+                    rgba(255,255,255,0.05) 75%,
+                    rgba(255,255,255,0.2) 100%);
+            animation: wave 3s ease-in-out infinite, ripple 2s ease-in-out infinite;
+            pointer-events: none;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .duck {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 32px;
+            transition: left 0.05s linear;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .duck-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        .water-effect {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 60% 30%, rgba(255,255,255,0.3) 0%, transparent 35%),
+                radial-gradient(ellipse at 80% 60%, rgba(255,255,255,0.35) 0%, transparent 40%),
+                linear-gradient(to right, 
+                    rgba(255,255,255,0.2) 0%, 
+                    rgba(255,255,255,0.05) 25%,
+                    rgba(255,255,255,0.15) 50%, 
+                    rgba(255,255,255,0.05) 75%,
+                    rgba(255,255,255,0.2) 100%);
+            animation: wave 3s ease-in-out infinite, ripple 2s ease-in-out infinite;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateX(0) scaleY(1); }
+            25% { transform: translateX(5px) scaleY(1.02); }
+            50% { transform: translateX(10px) scaleY(1); }
+            75% { transform: translateX(5px) scaleY(0.98); }
+        }
+        
+        @keyframes ripple {
+            0%, 100% { 
+                background-position: 0% 50%;
+                opacity: 0.8;
+            }
+            50% { 
+                background-position: 100% 50%;
+                opacity: 1;
+            }
+        }
+        
+        .water-splash {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: splash 0.6s ease-out forwards;
+        }
+        
+        @keyframes splash {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--splash-x, 10px), var(--splash-y, -20px)) scale(0.3);
+                opacity: 0;
+            }
+        }
+        
+        .winner-popup {
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        
+        .confetti {
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: confetti-fall 3s linear infinite;
+        }
+        
+        @keyframes confetti-fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        #race-timer {
+            transition: all 0.3s ease;
+        }
+        
+        #race-timer.warning {
+            color: #ef4444;
+            animation: timer-pulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes timer-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-2">🦆 Duck Race</h1>
+            <p class="text-white text-lg md:text-xl opacity-90">Enter names and watch the race!</p>
+        </div>
+        
+        <!-- Input Section -->
+        <div class="bg-white rounded-lg shadow-2xl p-6 md:p-8 mb-6">
+            <div class="mb-4">
+                <label for="participants" class="block text-gray-700 font-semibold mb-2 text-lg">
+                    Enter Participant Names (one per line, max 50)
+                </label>
+                <textarea 
+                    id="participants" 
+                    rows="8" 
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder="John Doe&#10;Jane Smith&#10;Bob Johnson&#10;Alice Williams&#10;Charlie Brown"
+                ></textarea>
+                <p id="participant-count" class="text-sm text-gray-500 mt-2">0 participants</p>
+            </div>
+            
+            <div class="mb-4">
+                <label for="race-duration" class="block text-gray-700 font-semibold mb-2 text-lg">
+                    Race Duration (seconds)
+                </label>
+                <select 
+                    id="race-duration" 
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors bg-white"
+                >
+                    <option value="10">10 seconds</option>
+                    <option value="20" selected>20 seconds</option>
+                    <option value="30">30 seconds</option>
+                </select>
+            </div>
+            
+            <button 
+                id="start-race-btn" 
+                class="w-full bg-gradient-purple text-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg"
+            >
+                🏁 Start Race!
+            </button>
+        </div>
+        
+        <!-- Race Track -->
+        <div id="race-track" class="hidden bg-white rounded-lg shadow-2xl p-6 md:p-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">🏁 Race Track</h2>
+                <div class="flex items-center gap-4">
+                    <div id="race-timer" class="text-2xl font-bold text-purple-600">
+                        <span id="timer-display">20:00</span>
+                    </div>
+                    <button 
+                        id="reset-btn" 
+                        class="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                        Reset Race
+                    </button>
+                </div>
+            </div>
+            <div id="ducks-container" class="space-y-2"></div>
+        </div>
+        
+        <!-- Winner Announcement -->
+        <div id="winner-modal" class="hidden fixed inset-0 bg-black-50 flex items-center justify-center z-50 p-4">
+            <div class="winner-popup bg-white rounded-lg p-8 md:p-12 max-w-md w-full text-center shadow-2xl">
+                <div class="text-6xl mb-4">🏆</div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Winner!</h2>
+                <div class="text-5xl my-4">🦆</div>
+                <p id="winner-name" class="text-2xl md:text-3xl font-semibold text-purple-600 mb-6"></p>
+                <button 
+                    id="close-modal-btn" 
+                    class="bg-gradient-purple text-white font-bold py-3 px-8 rounded-lg"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class SoundManager {
+            constructor() {
+                this.audioContext = null;
+                this.enabled = true;
+                this.initAudioContext();
+            }
+            
+            initAudioContext() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.warn('Web Audio API not supported');
+                    this.enabled = false;
+                }
+            }
+            
+            playRaceStart() {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Whistle sound
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, now);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(1000, now + 0.3);
+                
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            }
+            
+            playDuckQuack(pitch = 1) {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Duck quack sound
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+                
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(200 * pitch, now);
+                oscillator.frequency.exponentialRampToValueAtTime(100 * pitch, now + 0.1);
+                
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, now);
+                filter.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.15);
+            }
+            
+            playWaterSplash() {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Water splash sound (noise burst)
+                const bufferSize = this.audioContext.sampleRate * 0.1;
+                const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+                }
+                
+                const source = this.audioContext.createBufferSource();
+                const gainNode = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+                
+                source.buffer = buffer;
+                source.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 1500;
+                
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                source.start(now);
+            }
+            
+            playVictory() {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Victory fanfare
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                
+                notes.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    
+                    const startTime = now + (index * 0.15);
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                    
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+        }
+        
+        class DuckRace {
+            constructor() {
+                this.participants = [];
+                this.ducks = [];
+                this.raceActive = false;
+                this.winner = null;
+                this.trackWidth = 0;
+                this.animationFrame = null;
+                this.soundManager = new SoundManager();
+                this.lastSplashTime = {};
+                
+                this.init();
+            }
+            
+            init() {
+                this.participantsTextarea = document.getElementById('participants');
+                this.participantCount = document.getElementById('participant-count');
+                this.raceDurationSelect = document.getElementById('race-duration');
+                this.startRaceBtn = document.getElementById('start-race-btn');
+                this.raceTrack = document.getElementById('race-track');
+                this.ducksContainer = document.getElementById('ducks-container');
+                this.resetBtn = document.getElementById('reset-btn');
+                this.winnerModal = document.getElementById('winner-modal');
+                this.winnerName = document.getElementById('winner-name');
+                this.closeModalBtn = document.getElementById('close-modal-btn');
+                this.timerDisplay = document.getElementById('timer-display');
+                this.raceTimer = document.getElementById('race-timer');
+                
+                this.bindEvents();
+                this.updateParticipantCount();
+            }
+            
+            bindEvents() {
+                this.participantsTextarea.addEventListener('input', () => this.updateParticipantCount());
+                this.startRaceBtn.addEventListener('click', () => this.startRace());
+                this.resetBtn.addEventListener('click', () => this.resetRace());
+                this.closeModalBtn.addEventListener('click', () => this.closeWinnerModal());
+                window.addEventListener('resize', () => this.updateTrackWidth());
+            }
+            
+            updateParticipantCount() {
+                const text = this.participantsTextarea.value.trim();
+                const names = text ? text.split('\n').filter(name => name.trim() !== '') : [];
+                this.participantCount.textContent = `${names.length} participant${names.length !== 1 ? 's' : ''}`;
+                
+                if (names.length > 50) {
+                    this.participantCount.textContent += ' (Maximum 50 allowed)';
+                    this.participantCount.classList.add('text-red-500');
+                } else {
+                    this.participantCount.classList.remove('text-red-500');
+                }
+            }
+            
+            startRace() {
+                const text = this.participantsTextarea.value.trim();
+                if (!text) {
+                    alert('Please enter at least one participant name!');
+                    return;
+                }
+                
+                this.participants = text.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name !== '')
+                    .slice(0, 50); // Limit to 50 participants
+                
+                if (this.participants.length === 0) {
+                    alert('Please enter at least one participant name!');
+                    return;
+                }
+                
+                this.setupRace();
+                this.runRace();
+            }
+            
+            setupRace() {
+                // Clear previous race
+                this.ducksContainer.innerHTML = '';
+                this.ducks = [];
+                this.winner = null;
+                this.raceActive = true;
+                this.lastSplashTime = {};
+                
+                // Get race duration
+                this.raceDuration = parseInt(this.raceDurationSelect.value) * 1000; // Convert to milliseconds
+                this.raceStartTime = null;
+                
+                // Initialize timer display (format: seconds:centiseconds)
+                const initialSeconds = parseInt(this.raceDurationSelect.value);
+                this.timerDisplay.textContent = `${initialSeconds.toString().padStart(2, '0')}:00`;
+                this.raceTimer.classList.remove('warning');
+                
+                // Show race track
+                this.raceTrack.classList.remove('hidden');
+                
+                // Play race start sound
+                this.soundManager.playRaceStart();
+                
+                // Calculate speed multiplier based on duration
+                // The speed should be adjusted so ducks finish around the selected time
+                // Base speed range is 1 to 3 (exclusive), we'll scale it based on duration
+                // For 20s (default), use 1x multiplier
+                // For 10s, use 2x multiplier
+                // For 30s, use 0.67x multiplier
+                this.speedMultiplier = 20 / parseInt(this.raceDurationSelect.value);
+                
+                // Create ducks
+                this.participants.forEach((name, index) => {
+                    const duckContainer = document.createElement('div');
+                    duckContainer.className = 'duck-container';
+                    
+                    const duck = document.createElement('div');
+                    duck.className = 'duck';
+                    duck.innerHTML = `<span>🦆</span><span class="duck-name">${this.escapeHtml(name)}</span>`;
+                    duck.style.left = '0px';
+                    
+                    duckContainer.appendChild(duck);
+                    this.ducksContainer.appendChild(duckContainer);
+                    
+                    this.ducks.push({
+                        element: duck,
+                        name: name,
+                        position: 0,
+                        speed: (Math.random() * 2 + 1) * this.speedMultiplier, // Adjusted speed based on duration
+                        container: duckContainer,
+                        id: index,
+                        boostTimeout: null
+                    });
+                    
+                    this.lastSplashTime[index] = 0;
+                });
+                
+                // Calculate track width AFTER creating ducks so containers exist
+                this.updateTrackWidth();
+                
+                // Scroll to race track
+                this.raceTrack.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            updateTrackWidth() {
+                if (this.ducksContainer.children.length > 0) {
+                    const firstContainer = this.ducksContainer.children[0];
+                    this.trackWidth = firstContainer.offsetWidth;
+                }
+            }
+            
+            runRace() {
+                if (!this.raceActive) return;
+                
+                const animate = () => {
+                    if (!this.raceActive || this.winner) {
+                        return;
+                    }
+                    
+                    let hasWinner = false;
+                    const currentTime = Date.now();
+                    
+                    // Set race start time on first frame
+                    if (!this.raceStartTime) {
+                        this.raceStartTime = currentTime;
+                    }
+                    
+                    // Update timer display (format: seconds:centiseconds)
+                    const elapsedTime = currentTime - this.raceStartTime;
+                    const remainingTime = Math.max(0, this.raceDuration - elapsedTime);
+                    const seconds = Math.floor(remainingTime / 1000);
+                    const centiseconds = Math.floor((remainingTime % 1000) / 10);
+                    this.timerDisplay.textContent = `${seconds.toString().padStart(2, '0')}:${centiseconds.toString().padStart(2, '0')}`;
+                    
+                    // Add warning class when time is running out (last 5 seconds)
+                    if (remainingTime <= 5000) {
+                        this.raceTimer.classList.add('warning');
+                    } else {
+                        this.raceTimer.classList.remove('warning');
+                    }
+                    
+                    // Check if race duration has been exceeded
+                    if (elapsedTime >= this.raceDuration) {
+                        // Find the duck that's furthest ahead
+                        let leadDuck = this.ducks[0];
+                        this.ducks.forEach(duck => {
+                            if (duck.position > leadDuck.position) {
+                                leadDuck = duck;
+                            }
+                        });
+                        this.winner = leadDuck;
+                        this.announceWinner(leadDuck);
+                        return;
+                    }
+                    
+                    this.ducks.forEach(duck => {
+                        if (!hasWinner) {
+                            // Randomly accelerate ducks occasionally
+                            if (Math.random() < 0.01) { // 1% chance per frame
+                                const speedBoost = (Math.random() * 1.5 + 0.5) * this.speedMultiplier;
+                                // Speed cap is scaled by multiplier to maintain consistent race behavior across durations
+                                duck.speed = Math.min(duck.speed + speedBoost, 5 * this.speedMultiplier);
+                                
+                                // Play quack sound when accelerating
+                                const pitch = 0.8 + Math.random() * 0.4;
+                                this.soundManager.playDuckQuack(pitch);
+                                
+                                // Create water splash effect
+                                this.createWaterSplash(duck);
+                                
+                                // Clear previous timeout to prevent race conditions
+                                if (duck.boostTimeout) {
+                                    clearTimeout(duck.boostTimeout);
+                                }
+                                
+                                // Reset speed after a moment
+                                duck.boostTimeout = setTimeout(() => {
+                                    duck.speed = Math.max(duck.speed - speedBoost, 1 * this.speedMultiplier);
+                                    duck.boostTimeout = null;
+                                }, 500);
+                            }
+                            
+                            // Update position
+                            duck.position += duck.speed;
+                            
+                            // Create occasional water splashes
+                            if (currentTime - this.lastSplashTime[duck.id] > 200 && Math.random() < 0.05) {
+                                this.createWaterSplash(duck);
+                                this.lastSplashTime[duck.id] = currentTime;
+                            }
+                            
+                            // Update visual position
+                            const duckWidth = duck.element.offsetWidth;
+                            const maxPosition = this.trackWidth - duckWidth;
+                            
+                            if (duck.position >= maxPosition) {
+                                duck.position = maxPosition;
+                                duck.element.style.left = `${maxPosition}px`;
+                                
+                                if (!this.winner) {
+                                    this.winner = duck;
+                                    hasWinner = true;
+                                    this.announceWinner(duck);
+                                }
+                            } else {
+                                duck.element.style.left = `${duck.position}px`;
+                            }
+                        }
+                    });
+                    
+                    if (!hasWinner) {
+                        this.animationFrame = requestAnimationFrame(animate);
+                    }
+                };
+                
+                this.animationFrame = requestAnimationFrame(animate);
+            }
+            
+            createWaterSplash(duck) {
+                const container = duck.container;
+                const numSplashes = 2 + Math.floor(Math.random() * 3);
+                
+                for (let i = 0; i < numSplashes; i++) {
+                    const splash = document.createElement('div');
+                    splash.className = 'water-splash';
+                    
+                    const duckRect = duck.element.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    
+                    const relativeLeft = duckRect.left - containerRect.left + duckRect.width / 2;
+                    const relativeTop = duckRect.top - containerRect.top + duckRect.height / 2;
+                    
+                    splash.style.left = `${relativeLeft + (Math.random() - 0.5) * 20}px`;
+                    splash.style.top = `${relativeTop + (Math.random() - 0.5) * 10}px`;
+                    splash.style.setProperty('--splash-x', `${(Math.random() - 0.5) * 30}px`);
+                    splash.style.setProperty('--splash-y', `${-Math.random() * 30}px`);
+                    
+                    container.appendChild(splash);
+                    
+                    setTimeout(() => splash.remove(), 600);
+                }
+                
+                if (Math.random() < 0.3) {
+                    this.soundManager.playWaterSplash();
+                }
+            }
+            
+            announceWinner(duck) {
+                this.raceActive = false;
+                
+                // Add winning animation
+                duck.element.classList.add('pulse-animation');
+                
+                // Play victory sound
+                this.soundManager.playVictory();
+                
+                // Show winner modal after a brief delay
+                setTimeout(() => {
+                    this.winnerName.textContent = duck.name;
+                    this.winnerModal.classList.remove('hidden');
+                    this.createConfetti();
+                }, 500);
+            }
+            
+            createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                const winnerPopup = document.querySelector('.winner-popup');
+                
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.style.position = 'absolute';
+                        confetti.style.width = '10px';
+                        confetti.style.height = '10px';
+                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.top = '-10px';
+                        confetti.style.borderRadius = '50%';
+                        confetti.style.animation = `confetti-fall ${Math.random() * 2 + 2}s linear`;
+                        
+                        winnerPopup.appendChild(confetti);
+                        
+                        setTimeout(() => confetti.remove(), 4000);
+                    }, i * 30);
+                }
+            }
+            
+            closeWinnerModal() {
+                this.winnerModal.classList.add('hidden');
+            }
+            
+            resetRace() {
+                this.raceActive = false;
+                if (this.animationFrame) {
+                    cancelAnimationFrame(this.animationFrame);
+                }
+                this.raceTrack.classList.add('hidden');
+                this.ducksContainer.innerHTML = '';
+                this.ducks = [];
+                this.winner = null;
+                this.closeWinnerModal();
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+        
+        // Initialize the duck race when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new DuckRace();
+        });
+    </script>
+</body>
+</html>
