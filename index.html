@@ -151,7 +151,16 @@
             position: relative;
             height: 60px;
             margin-bottom: 10px;
-            background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 70%, #90EE90 70%, #90EE90 100%);
+            background: 
+                linear-gradient(to bottom, 
+                    rgba(135, 206, 235, 0.3) 0%, 
+                    rgba(135, 206, 235, 0.5) 40%,
+                    #4A9FD8 50%, 
+                    #3A8FC7 65%,
+                    #2D7FB5 70%, 
+                    #90EE90 70%, 
+                    #7DC67D 85%,
+                    #6AB86A 100%);
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -185,17 +194,57 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 30%;
-            background: linear-gradient(to right, 
-                rgba(255,255,255,0.3) 0%, 
-                rgba(255,255,255,0.1) 50%, 
-                rgba(255,255,255,0.3) 100%);
-            animation: wave 2s ease-in-out infinite;
+            height: 70%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 60% 30%, rgba(255,255,255,0.3) 0%, transparent 35%),
+                radial-gradient(ellipse at 80% 60%, rgba(255,255,255,0.35) 0%, transparent 40%),
+                linear-gradient(to right, 
+                    rgba(255,255,255,0.2) 0%, 
+                    rgba(255,255,255,0.05) 25%,
+                    rgba(255,255,255,0.15) 50%, 
+                    rgba(255,255,255,0.05) 75%,
+                    rgba(255,255,255,0.2) 100%);
+            animation: wave 3s ease-in-out infinite, ripple 2s ease-in-out infinite;
         }
         
         @keyframes wave {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(10px); }
+            0%, 100% { transform: translateX(0) scaleY(1); }
+            25% { transform: translateX(5px) scaleY(1.02); }
+            50% { transform: translateX(10px) scaleY(1); }
+            75% { transform: translateX(5px) scaleY(0.98); }
+        }
+        
+        @keyframes ripple {
+            0%, 100% { 
+                background-position: 0% 50%;
+                opacity: 0.8;
+            }
+            50% { 
+                background-position: 100% 50%;
+                opacity: 1;
+            }
+        }
+        
+        .water-splash {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: splash 0.6s ease-out forwards;
+        }
+        
+        @keyframes splash {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--splash-x, 10px), var(--splash-y, -20px)) scale(0.3);
+                opacity: 0;
+            }
         }
         
         .winner-popup {
@@ -292,6 +341,134 @@
     </div>
 
     <script>
+        class SoundManager {
+            constructor() {
+                this.audioContext = null;
+                this.enabled = true;
+                this.initAudioContext();
+            }
+            
+            initAudioContext() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.warn('Web Audio API not supported');
+                    this.enabled = false;
+                }
+            }
+            
+            playRaceStart() {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Whistle sound
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, now);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(1000, now + 0.3);
+                
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            }
+            
+            playDuckQuack(pitch = 1) {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Duck quack sound
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+                
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(200 * pitch, now);
+                oscillator.frequency.exponentialRampToValueAtTime(100 * pitch, now + 0.1);
+                
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, now);
+                filter.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.15);
+            }
+            
+            playWaterSplash() {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Water splash sound (noise burst)
+                const bufferSize = this.audioContext.sampleRate * 0.1;
+                const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+                }
+                
+                const source = this.audioContext.createBufferSource();
+                const gainNode = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+                
+                source.buffer = buffer;
+                source.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 1500;
+                
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                source.start(now);
+            }
+            
+            playVictory() {
+                if (!this.enabled || !this.audioContext) return;
+                
+                const now = this.audioContext.currentTime;
+                
+                // Victory fanfare
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                
+                notes.forEach((freq, index) => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    
+                    const startTime = now + (index * 0.15);
+                    gainNode.gain.setValueAtTime(0, startTime);
+                    gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                    
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.3);
+                });
+            }
+        }
+        
         class DuckRace {
             constructor() {
                 this.participants = [];
@@ -300,6 +477,8 @@
                 this.winner = null;
                 this.trackWidth = 0;
                 this.animationFrame = null;
+                this.soundManager = new SoundManager();
+                this.lastSplashTime = {};
                 
                 this.init();
             }
@@ -367,12 +546,16 @@
                 this.ducks = [];
                 this.winner = null;
                 this.raceActive = true;
+                this.lastSplashTime = {};
                 
                 // Show race track
                 this.raceTrack.classList.remove('hidden');
                 
                 // Calculate track width
                 this.updateTrackWidth();
+                
+                // Play race start sound
+                this.soundManager.playRaceStart();
                 
                 // Create ducks
                 this.participants.forEach((name, index) => {
@@ -396,8 +579,12 @@
                         name: name,
                         position: 0,
                         speed: Math.random() * 2 + 1, // Random speed between 1 (inclusive) and 3 (exclusive)
-                        container: duckContainer
+                        container: duckContainer,
+                        lastSpeed: 0,
+                        id: index
                     });
+                    
+                    this.lastSplashTime[index] = 0;
                 });
                 
                 // Scroll to race track
@@ -420,11 +607,36 @@
                     }
                     
                     let hasWinner = false;
+                    const currentTime = Date.now();
                     
                     this.ducks.forEach(duck => {
                         if (!hasWinner) {
+                            // Randomly accelerate ducks occasionally
+                            if (Math.random() < 0.01) { // 1% chance per frame
+                                const speedBoost = Math.random() * 1.5 + 0.5;
+                                duck.speed = Math.min(duck.speed + speedBoost, 5); // Cap at 5
+                                
+                                // Play quack sound when accelerating
+                                const pitch = 0.8 + Math.random() * 0.4;
+                                this.soundManager.playDuckQuack(pitch);
+                                
+                                // Create water splash effect
+                                this.createWaterSplash(duck);
+                                
+                                // Reset speed after a moment
+                                setTimeout(() => {
+                                    duck.speed = Math.max(duck.speed - speedBoost, 1);
+                                }, 500);
+                            }
+                            
                             // Update position
                             duck.position += duck.speed;
+                            
+                            // Create occasional water splashes
+                            if (currentTime - this.lastSplashTime[duck.id] > 200 && Math.random() < 0.05) {
+                                this.createWaterSplash(duck);
+                                this.lastSplashTime[duck.id] = currentTime;
+                            }
                             
                             // Update visual position
                             const duckWidth = duck.element.offsetWidth;
@@ -453,11 +665,43 @@
                 this.animationFrame = requestAnimationFrame(animate);
             }
             
+            createWaterSplash(duck) {
+                const container = duck.container;
+                const numSplashes = 2 + Math.floor(Math.random() * 3);
+                
+                for (let i = 0; i < numSplashes; i++) {
+                    const splash = document.createElement('div');
+                    splash.className = 'water-splash';
+                    
+                    const duckRect = duck.element.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    
+                    const relativeLeft = duckRect.left - containerRect.left + duckRect.width / 2;
+                    const relativeTop = duckRect.top - containerRect.top + duckRect.height / 2;
+                    
+                    splash.style.left = `${relativeLeft + (Math.random() - 0.5) * 20}px`;
+                    splash.style.top = `${relativeTop + (Math.random() - 0.5) * 10}px`;
+                    splash.style.setProperty('--splash-x', `${(Math.random() - 0.5) * 30}px`);
+                    splash.style.setProperty('--splash-y', `${-Math.random() * 30}px`);
+                    
+                    container.appendChild(splash);
+                    
+                    setTimeout(() => splash.remove(), 600);
+                }
+                
+                if (Math.random() < 0.3) {
+                    this.soundManager.playWaterSplash();
+                }
+            }
+            
             announceWinner(duck) {
                 this.raceActive = false;
                 
                 // Add winning animation
                 duck.element.classList.add('pulse-animation');
+                
+                // Play victory sound
+                this.soundManager.playVictory();
                 
                 // Show winner modal after a brief delay
                 setTimeout(() => {
