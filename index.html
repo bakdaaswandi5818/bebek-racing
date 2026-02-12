@@ -578,7 +578,7 @@
                 
                 // Calculate speed multiplier based on duration
                 // The speed should be adjusted so ducks finish around the selected time
-                // Base speed range is 1-3, we'll scale it based on duration
+                // Base speed range is 1 to 3 (exclusive), we'll scale it based on duration
                 // For 20s (default), use 1x multiplier
                 // For 10s, use 2x multiplier
                 // For 30s, use 0.67x multiplier
@@ -661,6 +661,7 @@
                             // Randomly accelerate ducks occasionally
                             if (Math.random() < 0.01) { // 1% chance per frame
                                 const speedBoost = (Math.random() * 1.5 + 0.5) * this.speedMultiplier;
+                                // Speed cap is scaled by multiplier to maintain consistent race behavior across durations
                                 duck.speed = Math.min(duck.speed + speedBoost, 5 * this.speedMultiplier);
                                 
                                 // Play quack sound when accelerating
