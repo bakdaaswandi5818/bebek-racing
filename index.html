@@ -208,7 +208,6 @@
         }
         
         .confetti {
-            position: fixed;
             width: 10px;
             height: 10px;
             background: #f0f;
@@ -396,7 +395,7 @@
                         element: duck,
                         name: name,
                         position: 0,
-                        speed: Math.random() * 2 + 1, // Random speed between 1 and 3
+                        speed: Math.random() * 2 + 1, // Random speed between 1 (inclusive) and 3 (exclusive)
                         container: duckContainer
                     });
                 });
