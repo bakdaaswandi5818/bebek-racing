@@ -301,6 +301,20 @@
                 <p id="participant-count" class="text-sm text-gray-500 mt-2">0 participants</p>
             </div>
             
+            <div class="mb-4">
+                <label for="race-duration" class="block text-gray-700 font-semibold mb-2 text-lg">
+                    Race Duration (seconds)
+                </label>
+                <select 
+                    id="race-duration" 
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors bg-white"
+                >
+                    <option value="10">10 seconds</option>
+                    <option value="20" selected>20 seconds</option>
+                    <option value="30">30 seconds</option>
+                </select>
+            </div>
+            
             <button 
                 id="start-race-btn" 
                 class="w-full bg-gradient-purple text-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg"
@@ -486,6 +500,7 @@
             init() {
                 this.participantsTextarea = document.getElementById('participants');
                 this.participantCount = document.getElementById('participant-count');
+                this.raceDurationSelect = document.getElementById('race-duration');
                 this.startRaceBtn = document.getElementById('start-race-btn');
                 this.raceTrack = document.getElementById('race-track');
                 this.ducksContainer = document.getElementById('ducks-container');
@@ -548,6 +563,10 @@
                 this.raceActive = true;
                 this.lastSplashTime = {};
                 
+                // Get race duration
+                this.raceDuration = parseInt(this.raceDurationSelect.value) * 1000; // Convert to milliseconds
+                this.raceStartTime = null;
+                
                 // Show race track
                 this.raceTrack.classList.remove('hidden');
                 
@@ -556,6 +575,14 @@
                 
                 // Play race start sound
                 this.soundManager.playRaceStart();
+                
+                // Calculate speed multiplier based on duration
+                // The speed should be adjusted so ducks finish around the selected time
+                // Base speed range is 1-3, we'll scale it based on duration
+                // For 20s (default), use 1x multiplier
+                // For 10s, use 2x multiplier
+                // For 30s, use 0.67x multiplier
+                this.speedMultiplier = 20 / parseInt(this.raceDurationSelect.value);
                 
                 // Create ducks
                 this.participants.forEach((name, index) => {
@@ -578,7 +605,7 @@
                         element: duck,
                         name: name,
                         position: 0,
-                        speed: Math.random() * 2 + 1, // Random speed between 1 (inclusive) and 3 (exclusive)
+                        speed: (Math.random() * 2 + 1) * this.speedMultiplier, // Adjusted speed based on duration
                         container: duckContainer,
                         id: index,
                         boostTimeout: null
@@ -609,12 +636,32 @@
                     let hasWinner = false;
                     const currentTime = Date.now();
                     
+                    // Set race start time on first frame
+                    if (!this.raceStartTime) {
+                        this.raceStartTime = currentTime;
+                    }
+                    
+                    // Check if race duration has been exceeded
+                    const elapsedTime = currentTime - this.raceStartTime;
+                    if (elapsedTime >= this.raceDuration) {
+                        // Find the duck that's furthest ahead
+                        let leadDuck = this.ducks[0];
+                        this.ducks.forEach(duck => {
+                            if (duck.position > leadDuck.position) {
+                                leadDuck = duck;
+                            }
+                        });
+                        this.winner = leadDuck;
+                        this.announceWinner(leadDuck);
+                        return;
+                    }
+                    
                     this.ducks.forEach(duck => {
                         if (!hasWinner) {
                             // Randomly accelerate ducks occasionally
                             if (Math.random() < 0.01) { // 1% chance per frame
-                                const speedBoost = Math.random() * 1.5 + 0.5;
-                                duck.speed = Math.min(duck.speed + speedBoost, 5); // Cap at 5
+                                const speedBoost = (Math.random() * 1.5 + 0.5) * this.speedMultiplier;
+                                duck.speed = Math.min(duck.speed + speedBoost, 5 * this.speedMultiplier);
                                 
                                 // Play quack sound when accelerating
                                 const pitch = 0.8 + Math.random() * 0.4;
@@ -630,7 +677,7 @@
                                 
                                 // Reset speed after a moment
                                 duck.boostTimeout = setTimeout(() => {
-                                    duck.speed = Math.max(duck.speed - speedBoost, 1);
+                                    duck.speed = Math.max(duck.speed - speedBoost, 1 * this.speedMultiplier);
                                     duck.boostTimeout = null;
                                 }, 500);
                             }
