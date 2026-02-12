@@ -596,9 +596,6 @@
                 // Show race track
                 this.raceTrack.classList.remove('hidden');
                 
-                // Calculate track width
-                this.updateTrackWidth();
-                
                 // Play race start sound
                 this.soundManager.playRaceStart();
                 
@@ -639,6 +636,9 @@
                     
                     this.lastSplashTime[index] = 0;
                 });
+                
+                // Calculate track width AFTER creating ducks so containers exist
+                this.updateTrackWidth();
                 
                 // Scroll to race track
                 this.raceTrack.scrollIntoView({ behavior: 'smooth' });
