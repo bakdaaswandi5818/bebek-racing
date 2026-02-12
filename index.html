@@ -343,7 +343,7 @@
                 <h2 class="text-2xl font-bold text-gray-800">🏁 Race Track</h2>
                 <div class="flex items-center gap-4">
                     <div id="race-timer" class="text-2xl font-bold text-purple-600">
-                        <span id="timer-display">00:00</span>
+                        <span id="timer-display">20:00</span>
                     </div>
                     <button 
                         id="reset-btn" 
@@ -588,7 +588,7 @@
                 this.raceDuration = parseInt(this.raceDurationSelect.value) * 1000; // Convert to milliseconds
                 this.raceStartTime = null;
                 
-                // Initialize timer display
+                // Initialize timer display (format: seconds:centiseconds)
                 const initialSeconds = parseInt(this.raceDurationSelect.value);
                 this.timerDisplay.textContent = `${initialSeconds.toString().padStart(2, '0')}:00`;
                 this.raceTimer.classList.remove('warning');
@@ -667,12 +667,12 @@
                         this.raceStartTime = currentTime;
                     }
                     
-                    // Update timer display
+                    // Update timer display (format: seconds:centiseconds)
                     const elapsedTime = currentTime - this.raceStartTime;
                     const remainingTime = Math.max(0, this.raceDuration - elapsedTime);
                     const seconds = Math.floor(remainingTime / 1000);
-                    const milliseconds = Math.floor((remainingTime % 1000) / 10);
-                    this.timerDisplay.textContent = `${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(2, '0')}`;
+                    const centiseconds = Math.floor((remainingTime % 1000) / 10);
+                    this.timerDisplay.textContent = `${seconds.toString().padStart(2, '0')}:${centiseconds.toString().padStart(2, '0')}`;
                     
                     // Add warning class when time is running out (last 5 seconds)
                     if (remainingTime <= 5000) {
